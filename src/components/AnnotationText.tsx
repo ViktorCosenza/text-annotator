@@ -1,29 +1,58 @@
 import React, { useRef, Dispatch, SetStateAction, RefObject } from 'react';
+import * as R from 'rambda'
 import {
+  Button,
+  Grid,
   Paper,
-  Typography
+  Typography,
+  AppBar
 } from '@material-ui/core'
 
-import { loremIpsum } from 'lorem-ipsum'
-
 type AnnotationTextProps = {
-  onSelection: (s: String) => void
-  setRef: Dispatch<SetStateAction<Element | null>>
+  text: String
+  selection: Selection | null
+  setSelection: (s: (Selection | null)) => void
+  onAdd: any
 }
 
 const AnnotationText: React.FC<AnnotationTextProps> = props => {
-  const ref = useRef(null)
-
-  const handleMouseSelection: () => void = () => {
-    props.setRef(ref.current)
-    props.onSelection(String(window.getSelection()))
-  }
+  const handleMouseSelection = R.pipe(
+    window.getSelection,
+    s => s ? (s.anchorOffset - s.focusOffset == 0 ? null : s) : null,
+    R.ifElse(
+      R.equals(0),
+      R.always(null),
+      props.setSelection
+    )
+  )
 
   return (
-    <Paper style={{ padding: '1rem' }} ref={ref}>
-      <Typography onDoubleClick={handleMouseSelection} onMouseUp={handleMouseSelection}>
-        {loremIpsum({ count: 25 })}
-      </Typography>
+    <Paper style={{ padding: '1rem' }}>
+      <Grid container direction="column">
+        <Grid item  children=
+          {
+            <Typography onDoubleClick={handleMouseSelection} onMouseUp={handleMouseSelection}>
+              {props.text}
+            </Typography>
+          }
+        />
+        <Grid item children=
+          {
+              <Grid container justify="flex-end" >
+                <Grid item children=
+                  {
+                    <Button 
+                      variant="outlined" 
+                      onClick={props.onAdd} 
+                      disabled={!props.selection} 
+                      children="Adicionar Seleção" />
+                  } 
+                />
+                  
+              </Grid>
+          }
+        />
+      </Grid>
     </Paper>
   );
 }

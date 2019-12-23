@@ -1,6 +1,7 @@
-import React, { useState, useRef, SetStateAction } from 'react';
+import React, { useState, useReducer, SetStateAction } from 'react';
+import { loremIpsum } from 'lorem-ipsum'
+
 import MenuIcon from '@material-ui/icons/Menu'
-import Logout from '@material-ui/icons/ExitToApp'
 import ArrowBack from '@material-ui/icons/ArrowBack'
 
 import {
@@ -9,31 +10,40 @@ import {
   Typography,
   Container,
   Grid,
-  Box,
   Menu,
   MenuItem
 } from '@material-ui/core'
 
 import AnnotationText from './AnnotationText'
 import AnnotationList from './Annotation/AnnotationList'
-
+import annotationReducer from '../utils/annotationReducer'
 
 const App: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [selectionRef, setSelectionRef] = useState<SetStateAction<Element | null>>(null)
-  const handleSelection = () => {
-    console.log(selectionRef)
-    setIsMenuOpen(true)
+  const [text, ] = useState(loremIpsum({count: 30}))
+  const [annotations, dispatch] = useReducer(annotationReducer, [])
+  const [selection, setSelection] = useState<SetStateAction<Selection | null>>(null);
+  const handleAdd = () => {
+    console.log(selection)  
+    dispatch({type: 'add', text: String(selection)})
   }
-
   return (
     <>
-      {selectionRef ? <SelectionMenu open={isMenuOpen} handleClose={() => setIsMenuOpen(false)} anchorEl={selectionRef as Element}/> : null}
       <TopBar />
       <Container disableGutters maxWidth="xl" style={{ padding: '1rem', flex: '1' }}>
         <Grid container direction="column" justify="space-evenly" spacing={2}>
-          <Grid item children={<AnnotationText setRef={setSelectionRef} onSelection={handleSelection}/>} style={{ flexGrow: 1 }} />
-          <Grid item children={<AnnotationList />} style={{ flexGrow: 1 }} />
+          <Grid item children=
+            {
+              <AnnotationText 
+                text={text}
+                selection={selection as Selection | null} 
+                setSelection={setSelection} 
+                onAdd={handleAdd}
+              />
+            } style={{ flexGrow: 1 }} />
+          <Grid item children=
+            {
+              <AnnotationList annotations={annotations} dispatch={dispatch}/>
+            } style={{ flexGrow: 1 }} />
         </Grid>
       </Container>
     </>
@@ -76,28 +86,6 @@ const MainMenu: React.FC = () => {
         <MenuItem children={<Button children="LOGOUT"/>} />
       </Menu>
     </>
-  );
-}
-
-type SelectionMenuProps = {
-  anchorEl: Element
-  handleClose: () => void
-  open: boolean
-}
-
-const SelectionMenu: React.FC<SelectionMenuProps> = props => {
-  const [anchorEl, setAnchorEl] = useState<Element | null | undefined>(props.anchorEl)
-  
-  return (
-      <Menu
-        keepMounted
-        anchorEl={anchorEl}
-        open={props.open}
-        onClose={props.handleClose}
-      >
-        <MenuItem children={<Button children={<ArrowBack/>}/>} />
-        <MenuItem children={<Button children="Add!!!!!"/>} />
-      </Menu>
   );
 }
 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
+import * as R from 'rambda'
 import Add from '@material-ui/icons/Add'
 import Save from '@material-ui/icons/Save'
 
@@ -11,24 +12,56 @@ import {
 
 import Annotation from './Annotation'
 
-const AnnotationList: React.FC = () => {
-  const [annotations, setAnnotations] = useState([1, 2, 3])
+
+type AnnotationListProps = {
+  dispatch: any
+  annotations: any
+}
+
+const AnnotationList: React.FC<AnnotationListProps> = props => {
   return (
     <>
-      <ActionBar />
+      <ActionBar dispatch={props.dispatch} />
       <Paper style={{ padding: '1rem' }}>
-        {annotations.map(annotation => <Annotation />)}
+        {
+          props.annotations.map((a: any) =>
+            <Annotation key={a.id} id={a.id} dispatch={props.dispatch} defaultValue={a.text}/>)
+        }
       </Paper>
     </>
   );
 }
 
-const ActionBar: React.FC = () => {
+type ActionBarProps = {
+  dispatch: (a: any) => void
+}
+
+const ActionBar: React.FC<ActionBarProps> = props => {
   return (
     <AppBar position="static" color='default' style={{ padding: '1rem' }}>
       <Grid container wrap="nowrap" justify="space-between">
-        <Grid item children={<Button size="small" variant='outlined' color="primary"><Save /></Button>} />
-        <Grid item children={<Button size="small" variant='outlined' color="secondary"><Add /></Button>} />
+        <Grid item children=
+          {
+            <Button
+              onClick={() => props.dispatch({ type: 'save' })}
+              size="small"
+              variant='outlined'
+              color="primary">
+              <Save />
+            </Button>
+          }
+        />
+        <Grid item children=
+          {
+            <Button
+              onClick={() => props.dispatch({ type: 'add' })}
+              size="small"
+              variant='outlined'
+              color="secondary">
+              <Add />
+            </Button>
+          }
+        />
       </Grid>
     </AppBar>
   );
