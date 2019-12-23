@@ -10,6 +10,7 @@ import {
   FormControl,
   Select,
   TextField,
+  Tooltip,
   FormControlLabel
 } from '@material-ui/core'
 
@@ -25,10 +26,9 @@ const Annotation: React.FC = () => {
         <Grid item children={<CustomTextInput />} style={{ flex: '3' }}/>
         <Grid item container justify="center" style={{flex: '1'}}>
           <Grid item> 
-              <FormControlLabel 
-                label="Explícito" 
-                control={<Checkbox color='primary' style={{flex: '1', marginLeft: '0px'}}/>}
-              />
+            <Tooltip title="Explícito">
+              <Checkbox color='primary' style={{flex: '1', marginLeft: '0px'}}/>
+            </Tooltip>
           </Grid>
         </Grid>
       </Grid>
