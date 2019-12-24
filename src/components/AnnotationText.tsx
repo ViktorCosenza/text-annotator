@@ -18,7 +18,7 @@ type AnnotationTextProps = {
 const AnnotationText: React.FC<AnnotationTextProps> = props => {
   const handleMouseSelection = R.pipe(
     window.getSelection,
-    s => s ? (s.anchorOffset - s.focusOffset == 0 ? null : s) : null,
+    s => s ? (s.anchorOffset - s.focusOffset === 0 ? null : s) : null,
     R.ifElse(
       R.equals(0),
       R.always(null),
