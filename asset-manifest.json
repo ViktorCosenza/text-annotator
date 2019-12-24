@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/text-annotator/static/css/main.7a4a6115.chunk.css",
+    "main.js": "/text-annotator/static/js/main.1540e0f2.chunk.js",
+    "main.js.map": "/text-annotator/static/js/main.1540e0f2.chunk.js.map",
+    "runtime-main.js": "/text-annotator/static/js/runtime-main.d6efd5d9.js",
+    "runtime-main.js.map": "/text-annotator/static/js/runtime-main.d6efd5d9.js.map",
+    "static/css/2.ba3f4fc4.chunk.css": "/text-annotator/static/css/2.ba3f4fc4.chunk.css",
+    "static/js/2.ba6f263a.chunk.js": "/text-annotator/static/js/2.ba6f263a.chunk.js",
+    "static/js/2.ba6f263a.chunk.js.map": "/text-annotator/static/js/2.ba6f263a.chunk.js.map",
+    "index.html": "/text-annotator/index.html",
+    "precache-manifest.fbd7112e531e782a91a2049ab6bc2c6e.js": "/text-annotator/precache-manifest.fbd7112e531e782a91a2049ab6bc2c6e.js",
+    "service-worker.js": "/text-annotator/service-worker.js",
+    "static/css/2.ba3f4fc4.chunk.css.map": "/text-annotator/static/css/2.ba3f4fc4.chunk.css.map",
+    "static/css/main.7a4a6115.chunk.css.map": "/text-annotator/static/css/main.7a4a6115.chunk.css.map",
+    "static/js/2.ba6f263a.chunk.js.LICENSE": "/text-annotator/static/js/2.ba6f263a.chunk.js.LICENSE",
+    "static/media/index.css": "/text-annotator/static/media/roboto-latin-900italic.ebf6d164.woff2"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.d6efd5d9.js",
+    "static/css/2.ba3f4fc4.chunk.css",
+    "static/js/2.ba6f263a.chunk.js",
+    "static/css/main.7a4a6115.chunk.css",
+    "static/js/main.1540e0f2.chunk.js"
+  ]
+}
