@@ -1,5 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Delete from '@material-ui/icons/Delete'
+
+import {onthology} from '../../utils/onthology'
+
 import {
   Checkbox,
   Grid,
@@ -18,13 +21,62 @@ type AnnotationProps = {
   defaultValue: String
 }
 
+
 const Annotation: React.FC<AnnotationProps> = props => {
+  const [annotation, setAnnotation] = useState({first: null, second: null, third: null})
+  const firstValues = onthology.map(el => el.name)
+  const secondValues = annotation.first
+    ? annotation.first.children.map(el => el.name)
+    : []
+
+  const thirdValues = annotation.second
+    ? annotation.second.children
+    : []
+
+  const handleChange = (field: string) => (e: React.ChangeEvent<{value: string}>) => {
+    let newValue
+    switch(field) {
+      case "first":
+        newValue = onthology.find(el => el.name === e.target.value)
+        break
+      case "second": 
+        newValue = annotation.first.children.find(el => el.name === e.target.value)
+        break 
+      case "third": 
+        newValue = e.target.value
+        break
+      default: throw Error("Invalid field parameter")
+    }
+    setAnnotation({
+      ...annotation,
+      [field]: newValue
+    })
+  }
+
   return (
     <Grid container wrap="nowrap" justify="space-between" spacing={2}>
       <Grid item container wrap="nowrap" justify="space-around" spacing={2} style={{ flex: '2' }}>
-        <Grid item children={<CustomSelect inputLabel="Nível 1" />} style={{ flex: "1" }} />
-        <Grid item children={<CustomSelect inputLabel="Nível 2" />} style={{ flex: "1" }} />
-        <Grid item children={<CustomSelect inputLabel="Nível 3" />} style={{ flex: "1" }} />
+        <Grid item children={
+          <CustomSelect 
+            onChange={handleChange('first')}
+            selected={annotation.first} 
+            values={firstValues}
+            inputLabel="Nível 1" />
+          } style={{ flex: "1" }} />
+        <Grid item children={
+          <CustomSelect 
+            onChange={handleChange('second')}
+            selected={annotation.second}
+            values={secondValues}
+            inputLabel="Nível 2" />
+          } style={{ flex: "1" }} />
+        <Grid item children={
+          <CustomSelect 
+            onChange={handleChange('third')}
+            selected={annotation.third}
+            values={thirdValues}
+            inputLabel="Nível 3" />
+          } style={{ flex: "1" }} />
       </Grid>
       <Grid item container justify="space-between" wrap="nowrap"  style={{flex: '1'}}>
         <Grid item children={<CustomTextInput defaultValue={props.defaultValue}/>} style={{ flex: '3' }}/>
@@ -50,16 +102,22 @@ const Annotation: React.FC<AnnotationProps> = props => {
 
 type CustomSelectProps = {
   inputLabel: string
+  values: string[]
+  selected: string
+  onChange: (e: React.ChangeEvent<{value: string}>) => void
 }
 
-const CustomSelect: React.FC<CustomSelectProps> = props => {
+const CustomSelect: React.FC<CustomSelectProps> = ({inputLabel, values, selected, onChange}) => {
   return (
     <FormControl style={{ minWidth: '100%' }}>
-      <InputLabel>{props.inputLabel}</InputLabel>
-      <Select>
-        <MenuItem>Um</MenuItem>
-        <MenuItem>Dois</MenuItem>
-        <MenuItem>Três</MenuItem>
+      <InputLabel>{inputLabel}</InputLabel>
+      <Select
+        value={selected}
+        onChange={onChange}
+      >
+        {
+          values.map(v => <MenuItem value={v}>{v}</MenuItem>)
+        }
       </Select>
     </FormControl>
   )
