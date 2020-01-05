@@ -1,164 +1,102 @@
-import React, { useState, useReducer, SetStateAction, SyntheticEvent } from 'react';
-import { loremIpsum } from 'lorem-ipsum'
+import React, { useState, useEffect } from 'react'
 
-import Note from '@material-ui/icons/Note'
-import CloudUpload from '@material-ui/icons/CloudUpload'
-import MenuIcon from '@material-ui/icons/Menu'
-import Done from '@material-ui/icons/Done'
-import {
-  AppBar,
-  Button,
-  Typography,
-  Container,
-  Grid,
-  Dialog,
-  DialogTitle,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Avatar
-} from '@material-ui/core'
+import Grid from '@material-ui/core/Grid'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+import CardActionArea from '@material-ui/core/CardActionArea'
+import CardHeader from '@material-ui/core/CardHeader'
+import Dialog from '@material-ui/core/Dialog'
 
-import AnnotationText from './AnnotationText'
-import AnnotationList from './Annotation/AnnotationList'
-import annotationReducer from '../utils/annotationReducer'
-
-const App: React.FC = () => {
-  const [files, setFiles] = useState<SetStateAction<any>>([])
+import { Annotator } from './Annotator'
+import { FileUploader } from './helpers/FileUploader'
+import { TopBar } from './TopBar'
 
 
-  const [text, setText] = useState(loremIpsum({ count: 30 }))
-  const [annotations, dispatch] = useReducer(annotationReducer, [])
-  const [selection, setSelection] = useState<SetStateAction<Selection | null>>(null);
+export const App: React.FC = () => {
+  const [files, setFiles] = useState<any[]>([])
+  const [selectedFile, setSelectedFile] = useState<any>(null)  
 
-  const handleAdd = () => {
-    console.log(selection)
-    dispatch({ type: 'add', text: String(selection) })
-  }
+  useEffect(() => {
+    if (selectedFile === null) return
+    if (selectedFile.text !== null) return
 
-  const handleUpload = ({ target: { files } }: any) => {
-    const readFile = async (f: File) => {
+    const readFile = (f: File) => {
       const r = new FileReader()
       r.onload = () => {
-        setText(r.result as string)
+        setFiles(files.map(f => f.id === selectedFile.id ? {...f, text: r.result}: f))
+        setSelectedFile({...selectedFile, text: r.result})
       }
       r.readAsText(f)
     }
-    console.log(files)
-    setFiles(Array.from(files).map((f: any) => ({
-      file: f, touched: false, annotation: {}
-    })))
+    readFile(selectedFile.file)
+  }, [selectedFile])
+
+  const handleUpload = ({ target: { files } }: any) => {
+    files = Array.from(files).map((f, idx) => ({
+      id: idx,
+      file: f, 
+      touched: false, 
+      text: null,
+      annotation: {}
+    })).sort((a, b) => a.id < b.id ? -1 : 1)
+
+    setFiles(files)
+    setSelectedFile(files[0])
+  }
+
+  const handleFileSelect = (filename: string) => {
+    setFiles(
+      files
+        .map(f => f.id === selectedFile.id ? {...f, ...selectedFile, touched: true} : f)
+        .sort((a, b) => a.id < b.id ? -1 : 1)
+    )
+    setSelectedFile(files.find(f => f.file.name === filename))
   }
 
   return (
     <>
-      <TopBar handleUpload={handleUpload} files={files.map((f: any) => ({filename: f.file.name, touched: f.touched}))} />
-      <Container disableGutters maxWidth="xl" style={{ padding: '1rem', flex: '1' }}>
-        <Grid container direction="column" justify="space-evenly" spacing={2}>
-          <Grid item children=
-            {
-              <AnnotationText
-                text={text}
-                selection={selection as Selection | null}
-                setSelection={setSelection}
-                onAdd={handleAdd}
-              />
-            } style={{ flexGrow: 1 }} />
-          <Grid item children=
-            {
-              <AnnotationList annotations={annotations} dispatch={dispatch} />
-            } style={{ flexGrow: 1 }} />
-        </Grid>
-      </Container>
-    </>
-  );
-}
-
-
-type TopbarProps = {
-  handleUpload: (a: any) => void,
-  files: Array<{
-    filename: string,
-    touched: boolean
-  }>
-}
-
-const TopBar: React.FC<TopbarProps> = props => {
-  return (
-    <AppBar position="static">
-      <Grid container wrap="nowrap" justify="space-between" style={{ padding: "0.5rem" }}>
-        <Grid item children={<Typography align="center" variant="h4" children="FAMA" />} />
-        <Grid item container justify="flex-end" spacing={1}>
-          <Grid item children={<FilePicker files={props.files}/>} />
-          <Grid item children={<FileUploader handleUpload={props.handleUpload}/>}/>
-          <Grid item children={<Button variant='contained'>Ajuda</Button>} />
-          <Grid item children={<Button variant="contained" children="LOGOUT"/>} />
-        </Grid>
-      </Grid>
-    </AppBar>
-  );
-}
-
-type FileUploaderProps = {
-  handleUpload: any
-}
-
-const FileUploader: React.FC<FileUploaderProps> = props => {
-  return (
-    <>
-      <input
-        accept="text/*"
-        id="upload-files"
-        multiple
-        type="file"
-        style={{ display: 'none' }}
-        onInput={props.handleUpload}
+      <TopBar
+        handleUpload={handleUpload}
+        handleFileSelect={handleFileSelect}
+        files={files.map((f: any) => ({ filename: f.file.name, touched: f.touched }))}
+        currentFile={selectedFile ? selectedFile.file.name : null}
       />
-      <label htmlFor="upload-files" >
-        <Button variant="contained" component="span">
-          <CloudUpload />
-        </Button>
-      </label>
+      {
+        selectedFile === null
+          ? <BigUpload 
+              handleUpload={handleUpload}
+            />
+          : <Annotator 
+              file={selectedFile}
+              text={selectedFile.text}
+            />
+      }
+
     </>
   )
 }
 
-type FilePickerProps = {
-  files: Array<{
-    filename: string,
-    touched: boolean
-  }>
+type BigUploadProps = {
+  handleUpload: ({ target: { files } }: any) => void
 }
 
-const FilePicker: React.FC<FilePickerProps> = props => {
-  const [isOpen, setIsOpen] = useState(false)
-  const handleClick = () => setIsOpen(true)
-  const handleClose = () => setIsOpen(false)
-
+const BigUpload: React.FC<BigUploadProps> = ({handleUpload}) => {
   return (
-    <>
-      <Button onClick={handleClick} variant="contained"><MenuIcon /></Button>
-      <Dialog onClose={handleClose} open={isOpen}>
-        <DialogTitle>Textos:</DialogTitle>
-        <List>
-          {
-            props.files.map((f: any) => 
-              <ListItem autoFocus button>
-                <ListItemAvatar>
-                  <Avatar>
-                    <Note />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={f.filename}/>
-                {f.touched ? <Done style={{color: 'green', marginLeft: '16px'}}/> : <></>}
-              </ListItem>
-            )
-          }
-        </List>
-      </Dialog>
-    </>
+    <Dialog open={true} >
+      <Grid >
+        <Card>
+          <CardHeader 
+            title="Envie arquivos para anotar"
+            style={{margin: "32px 16px"}}
+          />
+          <CardContent>
+            <Grid container justify="center">
+              <Grid item children={<FileUploader handleUpload={handleUpload} />}/>
+            </Grid>
+        </CardContent>
+        </Card>
+      </Grid>
+    </Dialog>
   )
-}
+} 
 
-export default App;

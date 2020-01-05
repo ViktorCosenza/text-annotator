@@ -18,7 +18,7 @@ type AnnotationListProps = {
   annotations: any
 }
 
-const AnnotationList: React.FC<AnnotationListProps> = props => {
+export const AnnotationList: React.FC<AnnotationListProps> = props => {
   return (
     <>
       <ActionBar dispatch={props.dispatch} />
@@ -66,5 +66,3 @@ const ActionBar: React.FC<ActionBarProps> = props => {
     </AppBar>
   );
 }
-
-export default AnnotationList;

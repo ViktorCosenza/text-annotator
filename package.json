@@ -27,7 +27,14 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "yarn run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "check": "gts check",
+    "clean": "gts clean",
+    "compile": "tsc -p .",
+    "fix": "gts fix",
+    "prepare": "yarn run compile",
+    "pretest": "yarn run compile",
+    "posttest": "yarn run check"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -45,6 +52,10 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^2.1.1"
+    "gh-pages": "^2.1.1",
+    "standard": "^14.3.1",
+    "gts": "^1.1.2",
+    "typescript": "~3.7.0",
+    "@types/node": "^10.0.3"
   }
 }
