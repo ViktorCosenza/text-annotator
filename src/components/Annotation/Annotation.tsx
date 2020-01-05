@@ -16,14 +16,15 @@ import {
 } from '@material-ui/core'
 
 type AnnotationProps = {
-  dispatch: (a: any) => void
+  onDelete: (a: any) => void
   id: number
   defaultValue: String
 }
 
 
-const Annotation: React.FC<AnnotationProps> = props => {
+const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue}) => {
   const [annotation, setAnnotation] = useState({first: null, second: null, third: null})
+  
   const firstValues = onthology.map(el => el.name)
   const secondValues = annotation.first
     ? annotation.first.children.map(el => el.name)
@@ -59,27 +60,27 @@ const Annotation: React.FC<AnnotationProps> = props => {
         <Grid item children={
           <CustomSelect 
             onChange={handleChange('first')}
-            selected={annotation.first} 
+            selected={annotation.first ? annotation.first.name : ""} 
             values={firstValues}
             inputLabel="Nível 1" />
           } style={{ flex: "1" }} />
         <Grid item children={
           <CustomSelect 
             onChange={handleChange('second')}
-            selected={annotation.second}
+            selected={annotation.second ? annotation.second.name : ""}
             values={secondValues}
             inputLabel="Nível 2" />
           } style={{ flex: "1" }} />
         <Grid item children={
           <CustomSelect 
             onChange={handleChange('third')}
-            selected={annotation.third}
+            selected={annotation.third ? annotation.third.name : ""}
             values={thirdValues}
             inputLabel="Nível 3" />
           } style={{ flex: "1" }} />
       </Grid>
       <Grid item container justify="space-between" wrap="nowrap"  style={{flex: '1'}}>
-        <Grid item children={<CustomTextInput defaultValue={props.defaultValue}/>} style={{ flex: '3' }}/>
+        <Grid item children={<CustomTextInput defaultValue={defaultValue}/>} style={{ flex: '3' }}/>
         <Grid item container justify="center" style={{flex: '1'}}>
           <Grid item> 
             <Tooltip title="Explícito">
@@ -89,7 +90,7 @@ const Annotation: React.FC<AnnotationProps> = props => {
           <Grid item>
               <Tooltip title="Deletar">
                 <Button 
-                  onClick={() => props.dispatch({type: 'delete', id: props.id})}
+                  onClick={() => onDelete(id)}
                   children={<Delete />} 
                 />
               </Tooltip>
@@ -116,7 +117,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({inputLabel, values, selected
         onChange={onChange}
       >
         {
-          values.map(v => <MenuItem value={v}>{v}</MenuItem>)
+          values.map(v => <MenuItem key={v} value={v}>{v}</MenuItem>)
         }
       </Select>
     </FormControl>

@@ -1,5 +1,4 @@
-import React, { useState, useReducer } from 'react';
-import { loremIpsum } from 'lorem-ipsum'
+import React, { useState, useEffect } from 'react';
 import * as R from 'rambda'
 
 import {
@@ -9,20 +8,16 @@ import {
 
 import {AnnotationText} from './AnnotationText'
 import {AnnotationList} from './Annotation/AnnotationList'
-import annotationReducer from '../utils/annotationReducer'
 
 type AnnotatorProps = {
-  file: any,
+  annotation: any
   text: string
+  handleAdd: any
+  handleDelete: any
 }
 
-export const Annotator: React.FC<AnnotatorProps> = ({file, text}) => {
-  const [annotations, dispatch] = useReducer(annotationReducer, [])
+export const Annotator: React.FC<AnnotatorProps> = ({annotation, text,  handleAdd, handleDelete}) => {
   const [selection, setSelection] = useState<Selection | null>(null);
-
-  const handleAdd = () => {
-    dispatch({ type: 'add', text: String(selection) })
-  }
 
   const handleSelection = R.pipe(
     window.getSelection,
@@ -44,12 +39,12 @@ export const Annotator: React.FC<AnnotatorProps> = ({file, text}) => {
                 text={text}
                 hasSelection={!selection}
                 handleSelection={handleSelection}
-                handleAdd={handleAdd}
+                handleAdd={() => handleAdd(selection)}
               />
             } style={{ flexGrow: 1 }} />
           <Grid item children=
             {
-              <AnnotationList annotations={annotations} dispatch={dispatch} />
+              <AnnotationList annotations={annotation} handleDelete={handleDelete} handleAdd={handleAdd} />
             } style={{ flexGrow: 1 }} />
         </Grid>
       </Container>

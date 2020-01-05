@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import CardActionArea from '@material-ui/core/CardActionArea'
 import CardHeader from '@material-ui/core/CardHeader'
 import Dialog from '@material-ui/core/Dialog'
 
@@ -14,7 +13,8 @@ import { TopBar } from './TopBar'
 
 export const App: React.FC = () => {
   const [files, setFiles] = useState<any[]>([])
-  const [selectedFile, setSelectedFile] = useState<any>(null)  
+  const [selectedFile, setSelectedFile] = useState<any>(null)
+  const [annotation, setAnnotation] = useState([])
 
   useEffect(() => {
     if (selectedFile === null) return
@@ -31,13 +31,42 @@ export const App: React.FC = () => {
     readFile(selectedFile.file)
   }, [selectedFile])
 
+  useEffect(() => {
+    if (selectedFile === null) return
+    setSelectedFile(
+      {
+        ...selectedFile, 
+        annotation: annotation
+      })
+  }, [annotation])
+
+  const handleAdd = (selection: string) => {
+    const text = selection ? String(selection) : ""
+    const newAnnotations = [
+      ...annotation, 
+      {
+        id: annotation.length + 1,
+        text: text, 
+        first: null, 
+        second: null, 
+        third: null
+      }
+    ]
+    setAnnotation(newAnnotations)
+  }
+
+  const handleDelete = (id: number) => {
+    const newAnnotations = annotation.filter(a => a.id !== id)
+    setAnnotation(newAnnotations)
+  }
+
   const handleUpload = ({ target: { files } }: any) => {
     files = Array.from(files).map((f, idx) => ({
       id: idx,
       file: f, 
       touched: false, 
       text: null,
-      annotation: {}
+      annotation: []
     })).sort((a, b) => a.id < b.id ? -1 : 1)
 
     setFiles(files)
@@ -50,7 +79,8 @@ export const App: React.FC = () => {
         .map(f => f.id === selectedFile.id ? {...f, ...selectedFile, touched: true} : f)
         .sort((a, b) => a.id < b.id ? -1 : 1)
     )
-    setSelectedFile(files.find(f => f.file.name === filename))
+    const newFile = files.find(f => f.file.name === filename)
+    setSelectedFile(newFile)
   }
 
   return (
@@ -67,7 +97,9 @@ export const App: React.FC = () => {
               handleUpload={handleUpload}
             />
           : <Annotator 
-              file={selectedFile}
+              annotation={selectedFile.annotation}
+              handleAdd={handleAdd}
+              handleDelete={handleDelete}
               text={selectedFile.text}
             />
       }

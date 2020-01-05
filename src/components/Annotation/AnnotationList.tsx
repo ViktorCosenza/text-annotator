@@ -1,5 +1,4 @@
-import React, { useReducer } from 'react';
-import * as R from 'rambda'
+import React from 'react';
 import Add from '@material-ui/icons/Add'
 import Save from '@material-ui/icons/Save'
 
@@ -14,18 +13,20 @@ import Annotation from './Annotation'
 
 
 type AnnotationListProps = {
-  dispatch: any
   annotations: any
+  handleAdd: any
+  handleDelete: any
 }
 
-export const AnnotationList: React.FC<AnnotationListProps> = props => {
+export const AnnotationList: React.FC<AnnotationListProps> = ({handleAdd, handleDelete, annotations}) => {
   return (
     <>
-      <ActionBar dispatch={props.dispatch} />
+      <ActionBar onAdd={handleAdd}/>
       <Paper style={{ padding: '1rem' }}>
         {
-          props.annotations.map((a: any) =>
-            <Annotation key={a.id} id={a.id} dispatch={props.dispatch} defaultValue={a.text}/>)
+          annotations.map((a: any) => 
+            <Annotation key={a.id} id={a.id} onDelete={handleDelete} defaultValue={a.text}/>
+          )
         }
       </Paper>
     </>
@@ -33,17 +34,17 @@ export const AnnotationList: React.FC<AnnotationListProps> = props => {
 }
 
 type ActionBarProps = {
-  dispatch: (a: any) => void
+  onAdd: (a: any) => void
 }
 
-const ActionBar: React.FC<ActionBarProps> = props => {
+const ActionBar: React.FC<ActionBarProps> = ({onAdd}) => {
   return (
     <AppBar position="static" color='default' style={{ padding: '1rem' }}>
       <Grid container wrap="nowrap" justify="space-between">
         <Grid item children=
           {
             <Button
-              onClick={() => props.dispatch({ type: 'save' })}
+              onClick={() => alert("Not implemented :'(")}
               size="small"
               variant='outlined'
               color="primary">
@@ -54,7 +55,7 @@ const ActionBar: React.FC<ActionBarProps> = props => {
         <Grid item children=
           {
             <Button
-              onClick={() => props.dispatch({ type: 'add' })}
+              onClick={onAdd}
               size="small"
               variant='outlined'
               color="secondary">

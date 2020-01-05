@@ -1,11 +1,9 @@
-import React, { useRef, Dispatch, SetStateAction, RefObject } from 'react';
-import * as R from 'rambda'
+import React from 'react';
 import {
   Button,
   Grid,
   Paper,
   Typography,
-  AppBar
 } from '@material-ui/core'
 
 type AnnotationTextProps = {
@@ -16,8 +14,6 @@ type AnnotationTextProps = {
 }
 
 export const AnnotationText: React.FC<AnnotationTextProps> = ({text, handleSelection, hasSelection, handleAdd}) => {
-
-
   return (
     <Text 
       onSelection={handleSelection}
@@ -36,8 +32,6 @@ type TextProps = {
 }
 
 export const Text: React.FC<TextProps> = ({onSelection, hasSelection, text, onAdd}) => {
-  
-
   return (
     <Paper style={{ padding: '1rem' }}>
       <Grid container direction="column">
@@ -60,7 +54,6 @@ export const Text: React.FC<TextProps> = ({onSelection, hasSelection, text, onAd
                       children="Adicionar Seleção" />
                   } 
                 />
-                  
               </Grid>
           }
         />

@@ -36,6 +36,7 @@ export const FilePicker: React.FC<FilePickerProps> = ({handleSelect, files, curr
           {
             files.map((f: any) => 
               <CustomListItem 
+                key={f.filename}
                 handleSelect={(f: string) => {
                   setIsOpen(false)
                   handleSelect(f)
