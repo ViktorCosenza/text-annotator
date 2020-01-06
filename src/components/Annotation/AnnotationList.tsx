@@ -21,7 +21,7 @@ type AnnotationListProps = {
 export const AnnotationList: React.FC<AnnotationListProps> = ({handleAdd, handleDelete, annotations}) => {
   return (
     <>
-      <ActionBar onAdd={handleAdd}/>
+      <ActionBar onAdd={() => handleAdd(null)}/>
       <Paper style={{ padding: '1rem' }}>
         {
           annotations.map((a: any) => 

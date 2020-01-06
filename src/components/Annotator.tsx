@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import * as R from 'rambda'
-
+import React, { useState } from 'react';
 import {
   Container,
   Grid,
@@ -19,15 +17,11 @@ type AnnotatorProps = {
 export const Annotator: React.FC<AnnotatorProps> = ({annotation, text,  handleAdd, handleDelete}) => {
   const [selection, setSelection] = useState<Selection | null>(null);
 
-  const handleSelection = R.pipe(
-    window.getSelection,
-    s => s ? (s.anchorOffset - s.focusOffset === 0 ? null : s) : null,
-    R.ifElse(
-      R.equals(0),
-      R.always(null),
-      setSelection
-    )
-  )
+  const handleSelection = () => {
+    const s = window.getSelection()
+    const newSelection = s ? (s.anchorOffset - s.focusOffset === 0 ? null : s) : null
+    setSelection(newSelection)
+  }
 
   return (
     <>

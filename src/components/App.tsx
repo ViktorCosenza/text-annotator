@@ -23,7 +23,7 @@ export const App: React.FC = () => {
     const readFile = (f: File) => {
       const r = new FileReader()
       r.onload = () => {
-        setFiles(files.map(f => f.id === selectedFile.id ? {...f, text: r.result}: f))
+        setFiles(files => files.map(f => f.id === selectedFile.id ? {...f, text: r.result}: f))
         setSelectedFile({...selectedFile, text: r.result})
       }
       r.readAsText(f)
@@ -33,15 +33,15 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (selectedFile === null) return
-    setSelectedFile(
-      {
-        ...selectedFile, 
+    setSelectedFile(oldFile => 
+      ({
+        ...oldFile, 
         annotation: annotation
-      })
+      }))
   }, [annotation])
 
-  const handleAdd = (selection: string) => {
-    const text = selection ? String(selection) : ""
+  const handleAdd = (selection: Selection | null) => {
+    const text = selection ? selection.toString() : ""
     const newAnnotations = [
       ...annotation, 
       {
