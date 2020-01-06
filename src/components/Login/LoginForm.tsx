@@ -6,11 +6,11 @@ import Button from '@material-ui/core/Button'
 
 
 type LoginFormProps = {
-  onLogin: () => void
+  onLogin: ({username, password}) => void
 } 
 
 export const LoginForm:React.FC<LoginFormProps> = ({onLogin}) => {
-  const [form, setForm] = useState({login: "", password:""})
+  const [form, setForm] = useState({username: "", password:""})
 
   const handleChange = e => {
       e.persist()
@@ -20,12 +20,14 @@ export const LoginForm:React.FC<LoginFormProps> = ({onLogin}) => {
       }))
     }
 
+  const handleSubmit = () => onLogin(form)
+
   return (
     <form>
       <Grid container direction="column" spacing={4}> 
         <Grid item children={<TextField required onChange={handleChange} value={form.login} name="login" label="Login"/>}/>
         <Grid item children={<TextField required onChange={handleChange} value={form.password} name="password" label="Senha"/>}/>
-        <Grid item children={<Button onClick={onLogin} variant="contained" style={{width: "100%"}}>LOGIN</Button>}/>
+        <Grid item children={<Button onClick={handleSubmit} variant="contained" style={{width: "100%"}}>LOGIN</Button>}/>
       </Grid>
     </form>
   )

@@ -5,31 +5,37 @@ import {App} from '../App'
 
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import CardHeader from '@material-ui/core/CardHeader'
 import Grid from '@material-ui/core/Grid'
+import Box from '@material-ui/core/Box'
+
+import {auth} from '../../services/client'
 
 
 export const Login: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false)
 
-  const handleLogin = () => {
+  const handleLogin = ({username, password}) => {
+    auth({username, password})
+      .then(console.log)
+      .catch(console.log)
+      .finally(console.log)
     setLoggedIn(true)
-    console.log("Logged in")
   } 
 
   if (loggedIn) 
     return (<App />)
   else 
     return (
-      <Grid container item alignItems="center" justify="center" style={{height: "100vh"}}>
-        <Grid item children={
-          <Card>
-            <CardContent>
-              <CardHeader title="Login" />
-              <LoginForm onLogin={handleLogin}/>
-            </CardContent>
-          </Card>
-        }/>
-      </Grid>
+      <Box style={{backgroundColor: 'pink'}}>
+        <Grid container item alignItems="center" justify="center" style={{height: "100vh"}}>
+          <Grid item children={
+            <Card>
+              <CardContent>
+                <LoginForm onLogin={handleLogin}/>
+              </CardContent>
+            </Card>
+          }/>
+        </Grid>
+      </Box>
     )
 }
