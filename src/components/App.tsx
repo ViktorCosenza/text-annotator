@@ -34,12 +34,52 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (selectedFile === null) return
+    setAnnotation(selectedFile.annotation)
+  }, [selectedFile])
+
+  useEffect(() => {
+    if (selectedFile === null) return
     setSelectedFile(oldFile => 
       ({
         ...oldFile, 
         annotation: annotation
       }))
   }, [annotation])
+
+  
+  const handleAnnotationChange = (id:number) => (field: string) => (e: React.ChangeEvent<{value: string}>) => {
+    let newValues
+    switch(field) {
+      case "first":
+        newValues = {
+          first: e.target.value,
+          second: "",
+          third: ""
+        }
+        break
+      case "second": 
+        newValues = {
+          second: e.target.value,
+          third: ""
+        }
+        break 
+      case "third":
+        newValues = {third: e.target.value}
+        break
+      case "reference":
+        newValues = {reference: e.target.value}
+        break
+      case "explicit": 
+        break
+      default: throw Error("Invalid field parameter")
+    }
+    setAnnotation(oldAnnotation => 
+      oldAnnotation.map(a => a.id === id ? {
+        ...a,
+        ...newValues,
+        ...(field === "explicit" ? {explicit: !a.explicit} : {})
+      } : a))
+  }
 
   const handleSave = () => {
     submitAnnotation({
@@ -48,22 +88,21 @@ export const App: React.FC = () => {
     })
   }
 
-  const handleAdd = (selection: Selection | null) => {
-    const text = selection ? selection.toString() : ""
-    const newAnnotations = [
+  const handleAdd = (selection: Selection | null) => () => {
+    setAnnotation([
       ...annotation, 
       {
         id: annotation.length + 1,
-        text: text, 
-        first: null, 
-        second: null, 
-        third: null
+        first: "",
+        second: "",
+        third: "",
+        explicit: false,
+        reference: selection ? selection.toString() : "", 
       }
-    ]
-    setAnnotation(newAnnotations)
+    ])
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: number) => () => {
     const newAnnotations = annotation.filter(a => a.id !== id)
     setAnnotation(newAnnotations)
   }
@@ -106,6 +145,7 @@ export const App: React.FC = () => {
             />
           : <Annotator 
               annotation={selectedFile.annotation}
+              handleChange={handleAnnotationChange}
               handleAdd={handleAdd}
               handleDelete={handleDelete}
               handleSave={handleSave}

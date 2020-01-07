@@ -10,12 +10,13 @@ import {AnnotationList} from './Annotation/AnnotationList'
 type AnnotatorProps = {
   annotation: any
   text: string
-  handleAdd: any
+  handleChange: any
+  handleAdd: (s:Selection | "") => () => void
   handleDelete: any
   handleSave: () => void
 }
 
-export const Annotator: React.FC<AnnotatorProps> = ({annotation, text,  handleAdd, handleSave, handleDelete}) => {
+export const Annotator: React.FC<AnnotatorProps> = ({annotation, text, handleChange, handleAdd, handleSave, handleDelete}) => {
   const [selection, setSelection] = useState<Selection | null>(null);
 
   const handleSelection = () => {
@@ -34,16 +35,17 @@ export const Annotator: React.FC<AnnotatorProps> = ({annotation, text,  handleAd
                 text={text}
                 hasSelection={!selection}
                 handleSelection={handleSelection}
-                handleAdd={() => handleAdd(selection)}
+                handleAdd={handleAdd(selection)}
               />
             } style={{ flexGrow: 1 }} />
           <Grid item children=
             {
               <AnnotationList 
                 annotations={annotation} 
+                handleChange={handleChange}
                 handleSave={handleSave} 
                 handleDelete={handleDelete} 
-                handleAdd={handleAdd} 
+                handleAdd={handleAdd("")} 
               />
             } style={{ flexGrow: 1 }} />
         </Grid>

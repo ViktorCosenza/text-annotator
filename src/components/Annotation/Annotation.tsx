@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Delete from '@material-ui/icons/Delete'
 
 import {onthology} from '../../utils/onthology'
+
+import {AnnotationType} from '../../types/AnnotationType'
 
 import {
   Checkbox,
@@ -16,55 +18,27 @@ import {
 } from '@material-ui/core'
 
 type AnnotationProps = {
-  onDelete: (a: any) => void
-  id: number
-  defaultValue: string
+  onDelete: () => void
+  handleChange: (a: any) => any
+  annotation: AnnotationType
 }
 
 
-const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue=""}) => {
-  const [annotation, setAnnotation] = useState({
-    first: null, 
-    second: null, 
-    third: null, 
-    reference: defaultValue,
-    explicit: defaultValue ? true : false  
-  })
-  
+const Annotation: React.FC<AnnotationProps> = ({onDelete, handleChange, annotation}) => {
   const firstValues = onthology.map(el => el.name)
   const secondValues = annotation.first
-    ? annotation.first.children.map(el => el.name)
+    ? onthology
+      .find(el => annotation.first === el.name)
+      .children.map(el => el.name)
     : []
 
   const thirdValues = annotation.second
-    ? annotation.second.children
+    ? onthology
+      .find(el => annotation.first === el.name).children
+      .find(el => annotation.second === el.name).children
     : []
 
-  const handleChange = (field: string) => (e: React.ChangeEvent<{value: string}>) => {
-    let newValue
-    switch(field) {
-      case "first":
-        newValue = onthology.find(el => el.name === e.target.value)
-        break
-      case "second": 
-        newValue = annotation.first.children.find(el => el.name === e.target.value)
-        break 
-      case "third":
-        newValue = e.target.value
-        break
-      case "reference":
-        newValue = e.target.value
-        break
-      case "explicit":
-        newValue = !annotation.explicit
-        break
-      default: throw Error("Invalid field parameter")
-    }
-    setAnnotation({
-      ...annotation,
-      [field]: newValue
-    })
-  }
+  
 
   return (
     <Grid container wrap="nowrap" justify="space-between" spacing={2}>
@@ -72,21 +46,21 @@ const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue=""}) 
         <Grid item children={
           <CustomSelect 
             onChange={handleChange('first')}
-            selected={annotation.first ? annotation.first.name : ""} 
+            selected={annotation.first} 
             values={firstValues}
             inputLabel="Nível 1" />
           } style={{ flex: "1" }} />
         <Grid item children={
           <CustomSelect 
             onChange={handleChange('second')}
-            selected={annotation.second ? annotation.second.name : ""}
+            selected={annotation.second}
             values={secondValues}
             inputLabel="Nível 2" />
           } style={{ flex: "1" }} />
         <Grid item children={
           <CustomSelect 
             onChange={handleChange('third')}
-            selected={annotation.third ? annotation.third.name : ""}
+            selected={annotation.third}
             values={thirdValues}
             inputLabel="Nível 3" />
           } style={{ flex: "1" }} />
@@ -116,7 +90,7 @@ const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue=""}) 
           <Grid item>
               <Tooltip title="Deletar">
                 <Button 
-                  onClick={() => onDelete(id)}
+                  onClick={onDelete}
                   children={<Delete />} 
                 />
               </Tooltip>
