@@ -18,12 +18,18 @@ import {
 type AnnotationProps = {
   onDelete: (a: any) => void
   id: number
-  defaultValue: String
+  defaultValue: string
 }
 
 
-const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue}) => {
-  const [annotation, setAnnotation] = useState({first: null, second: null, third: null})
+const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue=""}) => {
+  const [annotation, setAnnotation] = useState({
+    first: null, 
+    second: null, 
+    third: null, 
+    reference: defaultValue,
+    explicit: defaultValue ? true : false  
+  })
   
   const firstValues = onthology.map(el => el.name)
   const secondValues = annotation.first
@@ -43,8 +49,14 @@ const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue}) => 
       case "second": 
         newValue = annotation.first.children.find(el => el.name === e.target.value)
         break 
-      case "third": 
+      case "third":
         newValue = e.target.value
+        break
+      case "reference":
+        newValue = e.target.value
+        break
+      case "explicit":
+        newValue = !annotation.explicit
         break
       default: throw Error("Invalid field parameter")
     }
@@ -80,11 +92,25 @@ const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue}) => 
           } style={{ flex: "1" }} />
       </Grid>
       <Grid item container justify="space-between" wrap="nowrap"  style={{flex: '1'}}>
-        <Grid item children={<CustomTextInput defaultValue={defaultValue}/>} style={{ flex: '3' }}/>
+        <Grid 
+          item 
+          children=
+            {
+              <CustomTextInput 
+                value={annotation.reference}
+                onChange={handleChange("reference")}
+              />
+            } style={{ flex: '3' }}
+        />
         <Grid item container justify="center" style={{flex: '1'}}>
           <Grid item> 
             <Tooltip title="Explícito">
-              <Checkbox color='primary' style={{flex: '1', marginLeft: '0px'}}/>
+              <Checkbox 
+                onChange={handleChange("explicit")}
+                checked={annotation.explicit} 
+                color='primary' 
+                style={{flex: '1', marginLeft: '0px'}}
+              />
             </Tooltip>
           </Grid>
           <Grid item>
@@ -125,13 +151,14 @@ const CustomSelect: React.FC<CustomSelectProps> = ({inputLabel, values, selected
 }
 
 type CustomTextInputProps = {
-  defaultValue?: String
+  value: string
+  onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void 
 }
 
-const CustomTextInput: React.FC<CustomTextInputProps> = props => {
+const CustomTextInput: React.FC<CustomTextInputProps> = ({onChange, value}) => {
   return (
     <FormControl style={{ minWidth: '100%' }}>
-      <TextField label="Digite Aqui" defaultValue={props.defaultValue}/>
+      <TextField onChange={onChange} label="Digite Aqui" value={value}/>
     </FormControl>
   )
 }

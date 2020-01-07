@@ -25,7 +25,7 @@ export const LoginForm:React.FC<LoginFormProps> = ({onLogin}) => {
   return (
     <form>
       <Grid container direction="column" spacing={4}> 
-        <Grid item children={<TextField required onChange={handleChange} value={form.login} name="login" label="Login"/>}/>
+        <Grid item children={<TextField required onChange={handleChange} value={form.username} name="username" label="Login"/>}/>
         <Grid item children={<TextField required onChange={handleChange} value={form.password} name="password" label="Senha"/>}/>
         <Grid item children={<Button onClick={handleSubmit} variant="contained" style={{width: "100%"}}>LOGIN</Button>}/>
       </Grid>

@@ -16,12 +16,16 @@ type AnnotationListProps = {
   annotations: any
   handleAdd: any
   handleDelete: any
+  handleSave: () => void
 }
 
-export const AnnotationList: React.FC<AnnotationListProps> = ({handleAdd, handleDelete, annotations}) => {
+export const AnnotationList: React.FC<AnnotationListProps> = ({handleAdd, handleDelete, handleSave, annotations}) => {
   return (
     <>
-      <ActionBar onAdd={() => handleAdd(null)}/>
+      <ActionBar 
+        onSave={handleSave}
+        onAdd={() => handleAdd(null)}
+      />
       <Paper style={{ padding: '1rem' }}>
         {
           annotations.map((a: any) => 
@@ -35,16 +39,17 @@ export const AnnotationList: React.FC<AnnotationListProps> = ({handleAdd, handle
 
 type ActionBarProps = {
   onAdd: (a: any) => void
+  onSave: () => void
 }
 
-const ActionBar: React.FC<ActionBarProps> = ({onAdd}) => {
+const ActionBar: React.FC<ActionBarProps> = ({onAdd, onSave}) => {
   return (
     <AppBar position="static" color='default' style={{ padding: '1rem' }}>
       <Grid container wrap="nowrap" justify="space-between">
         <Grid item children=
           {
             <Button
-              onClick={() => alert("Not implemented :'(")}
+              onClick={onSave}
               size="small"
               variant='outlined'
               color="primary">

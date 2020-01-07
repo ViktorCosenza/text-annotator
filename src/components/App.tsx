@@ -10,6 +10,7 @@ import { Annotator } from './Annotator'
 import { FileUploader } from './helpers/FileUploader'
 import { TopBar } from './TopBar'
 
+import { submitAnnotation } from '../services/client'
 
 export const App: React.FC = () => {
   const [files, setFiles] = useState<any[]>([])
@@ -39,6 +40,13 @@ export const App: React.FC = () => {
         annotation: annotation
       }))
   }, [annotation])
+
+  const handleSave = () => {
+    submitAnnotation({
+      text: selectedFile.text,
+      annotation: selectedFile.annotation
+    })
+  }
 
   const handleAdd = (selection: Selection | null) => {
     const text = selection ? selection.toString() : ""
@@ -100,6 +108,7 @@ export const App: React.FC = () => {
               annotation={selectedFile.annotation}
               handleAdd={handleAdd}
               handleDelete={handleDelete}
+              handleSave={handleSave}
               text={selectedFile.text}
             />
       }

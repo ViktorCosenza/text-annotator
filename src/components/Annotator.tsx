@@ -12,9 +12,10 @@ type AnnotatorProps = {
   text: string
   handleAdd: any
   handleDelete: any
+  handleSave: () => void
 }
 
-export const Annotator: React.FC<AnnotatorProps> = ({annotation, text,  handleAdd, handleDelete}) => {
+export const Annotator: React.FC<AnnotatorProps> = ({annotation, text,  handleAdd, handleSave, handleDelete}) => {
   const [selection, setSelection] = useState<Selection | null>(null);
 
   const handleSelection = () => {
@@ -38,7 +39,12 @@ export const Annotator: React.FC<AnnotatorProps> = ({annotation, text,  handleAd
             } style={{ flexGrow: 1 }} />
           <Grid item children=
             {
-              <AnnotationList annotations={annotation} handleDelete={handleDelete} handleAdd={handleAdd} />
+              <AnnotationList 
+                annotations={annotation} 
+                handleSave={handleSave} 
+                handleDelete={handleDelete} 
+                handleAdd={handleAdd} 
+              />
             } style={{ flexGrow: 1 }} />
         </Grid>
       </Container>

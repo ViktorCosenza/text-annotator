@@ -15,11 +15,12 @@ export const Login: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false)
 
   const handleLogin = ({username, password}) => {
+    console.log('Requested...')
     auth({username, password})
       .then(console.log)
-      .catch(console.log)
-      .finally(console.log)
-    setLoggedIn(true)
+      .catch(console.error)
+      .finally(() => setLoggedIn(true))
+    
   } 
 
   if (loggedIn) 
