@@ -11,7 +11,7 @@ export const auth = ({username, password}) => client('valida.php', {
   data: qs.stringify({usuario: username, senha: password})
 })
 
-export const submitAnnotation = (texts: any) => console.log
+export const submitAnnotation = console.log
 
 export const submitAnnotationFORREAL = (texts: any) => {
   texts.map(t => client('salvaAnotacoes.php', {

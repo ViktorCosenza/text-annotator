@@ -41,28 +41,35 @@ const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue=""}) 
     : []
 
   const handleChange = (field: string) => (e: React.ChangeEvent<{value: string}>) => {
-    let newValue
+    let newValues
     switch(field) {
       case "first":
-        newValue = onthology.find(el => el.name === e.target.value)
+        newValues = {
+          first: onthology.find(el => el.name === e.target.value),
+          second: null,
+          third: null
+        }
         break
       case "second": 
-        newValue = annotation.first.children.find(el => el.name === e.target.value)
+        newValues = {
+          second: annotation.first.children.find(el => el.name === e.target.value),
+          third: null
+        }
         break 
       case "third":
-        newValue = e.target.value
+        newValues = {third: e.target.value}
         break
       case "reference":
-        newValue = e.target.value
+        newValues = {reference: e.target.value}
         break
       case "explicit":
-        newValue = !annotation.explicit
+        newValues = {explicit: !annotation.explicit}
         break
       default: throw Error("Invalid field parameter")
     }
     setAnnotation({
       ...annotation,
-      [field]: newValue
+      ...newValues
     })
   }
 
@@ -86,7 +93,7 @@ const Annotation: React.FC<AnnotationProps> = ({onDelete, id, defaultValue=""}) 
         <Grid item children={
           <CustomSelect 
             onChange={handleChange('third')}
-            selected={annotation.third ? annotation.third.name : ""}
+            selected={annotation.third || ""}
             values={thirdValues}
             inputLabel="Nível 3" />
           } style={{ flex: "1" }} />
@@ -135,6 +142,7 @@ type CustomSelectProps = {
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({inputLabel, values, selected, onChange}) => {
+  console.log(selected)
   return (
     <FormControl style={{ minWidth: '100%' }}>
       <InputLabel>{inputLabel}</InputLabel>
