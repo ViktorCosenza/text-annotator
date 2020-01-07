@@ -1,27 +1,27 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "468148d0cde6e3f360c87cbc3a03ae2a",
+    "revision": "f74603a18b8d2ce2d57482f751a737e3",
     "url": "/text-annotator/index.html"
   },
   {
-    "revision": "3aa0542a616ac78efdcb",
+    "revision": "ce7d9d247b5904951603",
     "url": "/text-annotator/static/css/2.ba3f4fc4.chunk.css"
   },
   {
-    "revision": "e9441c06afaf11bd44fd",
+    "revision": "ee72cce2714a268562fa",
     "url": "/text-annotator/static/css/main.7a4a6115.chunk.css"
   },
   {
-    "revision": "3aa0542a616ac78efdcb",
-    "url": "/text-annotator/static/js/2.3285afce.chunk.js"
+    "revision": "ce7d9d247b5904951603",
+    "url": "/text-annotator/static/js/2.3fc7a74c.chunk.js"
   },
   {
     "revision": "26c31c05639d8c8e4d046eb1b98016c3",
-    "url": "/text-annotator/static/js/2.3285afce.chunk.js.LICENSE"
+    "url": "/text-annotator/static/js/2.3fc7a74c.chunk.js.LICENSE"
   },
   {
-    "revision": "e9441c06afaf11bd44fd",
-    "url": "/text-annotator/static/js/main.7f2f5e63.chunk.js"
+    "revision": "ee72cce2714a268562fa",
+    "url": "/text-annotator/static/js/main.f2b24b24.chunk.js"
   },
   {
     "revision": "32df9aa5b8ca02e56e97",
