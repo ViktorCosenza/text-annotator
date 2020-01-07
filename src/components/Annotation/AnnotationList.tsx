@@ -11,25 +11,27 @@ import {
 
 import Annotation from './Annotation'
 
+import {AnnotationType} from '../../types/AnnotationType'
 
 type AnnotationListProps = {
-  annotations: any
-  handleAdd: any
+  annotations: AnnotationType[]
+  handleChange: any
+  handleAdd: () => void
   handleDelete: any
   handleSave: () => void
 }
 
-export const AnnotationList: React.FC<AnnotationListProps> = ({handleAdd, handleDelete, handleSave, annotations}) => {
+export const AnnotationList: React.FC<AnnotationListProps> = ({handleAdd, handleChange, handleDelete, handleSave, annotations}) => {
   return (
     <>
       <ActionBar 
         onSave={handleSave}
-        onAdd={() => handleAdd(null)}
+        onAdd={handleAdd}
       />
       <Paper style={{ padding: '1rem' }}>
         {
           annotations.map((a: any) => 
-            <Annotation key={a.id} id={a.id} onDelete={handleDelete} defaultValue={a.text}/>
+            <Annotation key={a.id} handleChange={handleChange(a.id)} onDelete={handleDelete(a.id)} annotation={a}/>
           )
         }
       </Paper>
