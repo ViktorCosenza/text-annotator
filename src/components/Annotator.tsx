@@ -45,7 +45,6 @@ export const Annotator: React.FC<AnnotatorProps> = ({annotation, text, handleCha
                 handleChange={handleChange}
                 handleSave={handleSave} 
                 handleDelete={handleDelete} 
-                handleAdd={handleAdd("")} 
               />
             } style={{ flexGrow: 1 }} />
         </Grid>

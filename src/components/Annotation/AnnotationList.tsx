@@ -1,5 +1,4 @@
 import React from 'react';
-import Add from '@material-ui/icons/Add'
 import Save from '@material-ui/icons/Save'
 
 import {
@@ -16,17 +15,15 @@ import {AnnotationType} from '../../types/AnnotationType'
 type AnnotationListProps = {
   annotations: AnnotationType[]
   handleChange: any
-  handleAdd: () => void
   handleDelete: any
   handleSave: () => void
 }
 
-export const AnnotationList: React.FC<AnnotationListProps> = ({handleAdd, handleChange, handleDelete, handleSave, annotations}) => {
+export const AnnotationList: React.FC<AnnotationListProps> = ({ handleChange, handleDelete, handleSave, annotations}) => {
   return (
     <>
       <ActionBar 
         onSave={handleSave}
-        onAdd={handleAdd}
       />
       <Paper style={{ padding: '1rem' }}>
         {
@@ -40,11 +37,10 @@ export const AnnotationList: React.FC<AnnotationListProps> = ({handleAdd, handle
 }
 
 type ActionBarProps = {
-  onAdd: (a: any) => void
   onSave: () => void
 }
 
-const ActionBar: React.FC<ActionBarProps> = ({onAdd, onSave}) => {
+const ActionBar: React.FC<ActionBarProps> = ({ onSave }) => {
   return (
     <AppBar position="static" color='default' style={{ padding: '1rem' }}>
       <Grid container wrap="nowrap" justify="space-between">
@@ -56,17 +52,6 @@ const ActionBar: React.FC<ActionBarProps> = ({onAdd, onSave}) => {
               variant='outlined'
               color="primary">
               <Save />
-            </Button>
-          }
-        />
-        <Grid item children=
-          {
-            <Button
-              onClick={onAdd}
-              size="small"
-              variant='outlined'
-              color="secondary">
-              <Add />
             </Button>
           }
         />

@@ -11,6 +11,7 @@ import { FileUploader } from './helpers/FileUploader'
 import { TopBar } from './TopBar'
 
 import { submitAnnotation } from '../services/client'
+import { Polarity } from '../types/AnnotationType'
 
 export const App: React.FC = () => {
   const [files, setFiles] = useState<any[]>([])
@@ -66,18 +67,26 @@ export const App: React.FC = () => {
       case "third":
         newValues = {third: e.target.value}
         break
-      case "reference":
-        newValues = {reference: e.target.value}
+      case "fourth":
+        newValues = {fourth: e.target.value}
         break
+      case "polarity":
       case "explicit": 
         break
       default: throw Error("Invalid field parameter")
+    }
+
+    function nextPolarity(p: Polarity) {
+      if (p === Polarity.Positive) return Polarity.Negative
+      if (p === Polarity.Neutral) return Polarity.Positive
+      if (p === Polarity.Negative) return Polarity.Neutral
     }
     setAnnotation(oldAnnotation => 
       oldAnnotation.map(a => a.id === id ? {
         ...a,
         ...newValues,
-        ...(field === "explicit" ? {explicit: !a.explicit} : {})
+        ...(field === "explicit" ? {explicit: !a.explicit} : {}),
+        ...(field === "polarity" ? {polarity: nextPolarity(a.polarity)} : {})
       } : a))
   }
 
@@ -88,7 +97,7 @@ export const App: React.FC = () => {
     })
   }
 
-  const handleAdd = (selection: Selection | null) => () => {
+  const handleAdd = (selection: Selection) => () => {
     setAnnotation([
       ...annotation, 
       {
@@ -96,8 +105,13 @@ export const App: React.FC = () => {
         first: "",
         second: "",
         third: "",
+        fourth: "",
         explicit: false,
-        reference: selection ? selection.toString() : "", 
+        polarity: Polarity.Neutral,
+        reference: {
+          text: selection.toString(),
+          pos: [selection.focusOffset, selection.anchorOffset].sort()
+        }, 
       }
     ])
   }

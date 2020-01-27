@@ -1,9 +1,12 @@
 import React from 'react';
 import Delete from '@material-ui/icons/Delete'
+import ThumbDown from '@material-ui/icons/ThumbDown'
+import ThumbUp from '@material-ui/icons/ThumbUp'
+import Remove from '@material-ui/icons/Remove'
 
-import {onthology} from '../../utils/onthology'
+import ontology from '../../utils/ontology'
 
-import {AnnotationType} from '../../types/AnnotationType'
+import {AnnotationType, Polarity} from '../../types/AnnotationType'
 
 import {
   Checkbox,
@@ -25,20 +28,17 @@ type AnnotationProps = {
 
 
 const Annotation: React.FC<AnnotationProps> = ({onDelete, handleChange, annotation}) => {
-  const firstValues = onthology.map(el => el.name)
+  const firstValues = Object.keys(ontology)
   const secondValues = annotation.first
-    ? onthology
-      .find(el => annotation.first === el.name)
-      .children.map(el => el.name)
+    ? Object.keys(ontology[annotation.first])
     : []
-
   const thirdValues = annotation.second
-    ? onthology
-      .find(el => annotation.first === el.name).children
-      .find(el => annotation.second === el.name).children
-    : []
-
+    ? Object.keys(ontology[annotation.first][annotation.second])
+    : []  
   
+  const fourthValues = annotation.third
+    ? Object.keys(ontology[annotation.first][annotation.second][annotation.third])
+    : []
 
   return (
     <Grid container wrap="nowrap" justify="space-between" spacing={2}>
@@ -64,18 +64,20 @@ const Annotation: React.FC<AnnotationProps> = ({onDelete, handleChange, annotati
             values={thirdValues}
             inputLabel="Nível 3" />
           } style={{ flex: "1" }} />
+        <Grid item children={
+          <CustomSelect 
+            onChange={handleChange('fourth')}
+            selected={annotation.fourth}
+            values={fourthValues}
+            inputLabel="Nível 4" />
+          } style={{ flex: "1" }} />
       </Grid>
       <Grid item container justify="space-between" wrap="nowrap"  style={{flex: '1'}}>
         <Grid 
           item 
-          children=
-            {
-              <CustomTextInput 
-                value={annotation.reference}
-                onChange={handleChange("reference")}
-              />
-            } style={{ flex: '3' }}
+          children={<CustomTextInput value={annotation.reference.text}/>} style={{ flex: '3' }}
         />
+        <Grid item children={<PolaritySelect selected={annotation.polarity} onChange={handleChange("polarity")}/>}/>
         <Grid item container justify="center" style={{flex: '1'}}>
           <Grid item> 
             <Tooltip title="Explícito">
@@ -126,14 +128,35 @@ const CustomSelect: React.FC<CustomSelectProps> = ({inputLabel, values, selected
 
 type CustomTextInputProps = {
   value: string
-  onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void 
 }
 
-const CustomTextInput: React.FC<CustomTextInputProps> = ({onChange, value}) => {
+const CustomTextInput: React.FC<CustomTextInputProps> = ({value}) => {
   return (
     <FormControl style={{ minWidth: '100%' }}>
-      <TextField onChange={onChange} label="Digite Aqui" value={value}/>
+      <TextField disabled label="Selecione no texto" value={value}/>
     </FormControl>
+  )
+}
+
+
+const PolaritySelect: React.FC<any> = ({onChange, selected}) => {
+  let icon
+  switch(selected){
+    case Polarity.Positive:
+      icon = <ThumbUp style={{color: "green"}}/>
+      break
+    case Polarity.Neutral:
+      icon = <Remove  style={{color: "orange"}}/>
+      break
+    case Polarity.Negative:
+      icon = <ThumbDown style={{color: "red"}}/>
+      break
+  }
+  
+  return ( 
+    <Grid direction="column" justify="center" alignItems="center" alignContent="center" container>
+      <Grid item children={<Button onClick={onChange} children={icon}/>}/>
+    </Grid>  
   )
 }
 
