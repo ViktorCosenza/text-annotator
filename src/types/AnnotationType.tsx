@@ -5,6 +5,7 @@ export enum Polarity{
 }
 
 export type AnnotationType = {
+  id: number,
   first: string,
   second: string,
   third: string,

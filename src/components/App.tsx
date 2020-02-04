@@ -1,56 +1,31 @@
 import React, { useState, useEffect } from 'react'
 
-import Grid from '@material-ui/core/Grid'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import CardHeader from '@material-ui/core/CardHeader'
-import Dialog from '@material-ui/core/Dialog'
-
 import { Annotator } from './Annotator'
-import { FileUploader } from './helpers/FileUploader'
 import { TopBar } from './TopBar'
 
-import { submitAnnotation } from '../services/client'
-import { Polarity } from '../types/AnnotationType'
+import { submitAnnotation, getOntology, getAssigment } from '../services/client'
+import { Polarity, AnnotationType } from '../types/AnnotationType'
 
 export const App: React.FC = () => {
-  const [files, setFiles] = useState<any[]>([])
-  const [selectedFile, setSelectedFile] = useState<any>(null)
-  const [annotation, setAnnotation] = useState([])
+  const [annotation, setAnnotation] = useState<Array<AnnotationType>>([])
+  const [ontology, setOntology] = useState(null)
+  const [assigment, setAssigment] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [err, setErr] = useState(false)
 
   useEffect(() => {
-    if (selectedFile === null) return
-    if (selectedFile.text !== null) return
+    Promise.all([getOntology(), getAssigment()])
+      .then(([{ data: { data } }, { data: { assigment } }]) => {
+        setOntology(JSON.parse(data))
+        setAssigment(assigment)
+      })
+      .catch(setErr) 
+      .finally(() => setIsLoading(false))
+  }, [])
 
-    const readFile = (f: File) => {
-      const r = new FileReader()
-      r.onload = () => {
-        setFiles(files => files.map(f => f.id === selectedFile.id ? {...f, text: r.result}: f))
-        setSelectedFile({...selectedFile, text: r.result})
-      }
-      r.readAsText(f)
-    }
-    readFile(selectedFile.file)
-  }, [selectedFile])
-
-  useEffect(() => {
-    if (selectedFile === null) return
-    setAnnotation(selectedFile.annotation)
-  }, [selectedFile])
-
-  useEffect(() => {
-    if (selectedFile === null) return
-    setSelectedFile(oldFile => 
-      ({
-        ...oldFile, 
-        annotation: annotation
-      }))
-  }, [annotation])
-
-  
-  const handleAnnotationChange = (id:number) => (field: string) => (e: React.ChangeEvent<{value: string}>) => {
+  const handleAnnotationChange = (id: number) => (field: string) => (e: React.ChangeEvent<{ value: string }>) => {
     let newValues
-    switch(field) {
+    switch (field) {
       case "first":
         newValues = {
           first: e.target.value,
@@ -58,20 +33,20 @@ export const App: React.FC = () => {
           third: ""
         }
         break
-      case "second": 
+      case "second":
         newValues = {
           second: e.target.value,
           third: ""
         }
-        break 
+        break
       case "third":
-        newValues = {third: e.target.value}
+        newValues = { third: e.target.value }
         break
       case "fourth":
-        newValues = {fourth: e.target.value}
+        newValues = { fourth: e.target.value }
         break
       case "polarity":
-      case "explicit": 
+      case "explicit":
         break
       default: throw Error("Invalid field parameter")
     }
@@ -81,25 +56,36 @@ export const App: React.FC = () => {
       if (p === Polarity.Neutral) return Polarity.Positive
       if (p === Polarity.Negative) return Polarity.Neutral
     }
-    setAnnotation(oldAnnotation => 
+    setAnnotation(oldAnnotation =>
       oldAnnotation.map(a => a.id === id ? {
         ...a,
         ...newValues,
-        ...(field === "explicit" ? {explicit: !a.explicit} : {}),
-        ...(field === "polarity" ? {polarity: nextPolarity(a.polarity)} : {})
+        ...(field === "explicit" ? { explicit: !a.explicit } : {}),
+        ...(field === "polarity" ? { polarity: nextPolarity(a.polarity) } : {})
       } : a))
   }
 
   const handleSave = () => {
     submitAnnotation({
-      text: selectedFile.text,
-      annotation: selectedFile.annotation
-    })
+        assigment_id: assigment.assigment_id,
+        labels: annotation.map(a => ({ 
+          first: a.first,
+          second: a.second,
+          third: a.third,
+          fourth: a.fourth,
+          explicit: a.explicit,
+          polarity: a.polarity,
+          start: a.reference.pos[0],
+          end: a.reference.pos[1]
+        }))
+      })
+      .then(console.log)
+      .catch(console.error)
   }
 
   const handleAdd = (selection: Selection) => () => {
     setAnnotation([
-      ...annotation, 
+      ...annotation,
       {
         id: annotation.length + 1,
         first: "",
@@ -111,7 +97,7 @@ export const App: React.FC = () => {
         reference: {
           text: selection.toString(),
           pos: [selection.focusOffset, selection.anchorOffset].sort()
-        }, 
+        },
       }
     ])
   }
@@ -121,77 +107,32 @@ export const App: React.FC = () => {
     setAnnotation(newAnnotations)
   }
 
-  const handleUpload = ({ target: { files } }: any) => {
-    files = Array.from(files).map((f, idx) => ({
-      id: idx,
-      file: f, 
-      touched: false, 
-      text: null,
-      annotation: []
-    })).sort((a, b) => a.id < b.id ? -1 : 1)
-
-    setFiles(files)
-    setSelectedFile(files[0])
-  }
-
-  const handleFileSelect = (filename: string) => {
-    setFiles(
-      files
-        .map(f => f.id === selectedFile.id ? {...f, ...selectedFile, touched: true} : f)
-        .sort((a, b) => a.id < b.id ? -1 : 1)
+  if (err){
+    return (
+      <>
+        Erro: {err}
+      </>
     )
-    const newFile = files.find(f => f.file.name === filename)
-    setSelectedFile(newFile)
   }
 
   return (
     <>
-      <TopBar
-        handleUpload={handleUpload}
-        handleFileSelect={handleFileSelect}
-        files={files.map((f: any) => ({ filename: f.file.name, touched: f.touched }))}
-        currentFile={selectedFile ? selectedFile.file.name : null}
-      />
+      <TopBar/>
       {
-        selectedFile === null
-          ? <BigUpload 
-              handleUpload={handleUpload}
-            />
-          : <Annotator 
-              annotation={selectedFile.annotation}
+        isLoading
+          ? <> </>
+          : <Annotator
+              ontology={ontology}
+              annotation={annotation}
               handleChange={handleAnnotationChange}
               handleAdd={handleAdd}
               handleDelete={handleDelete}
               handleSave={handleSave}
-              text={selectedFile.text}
-            />
+              text={assigment.text}
+          />
       }
-
     </>
   )
 }
 
-type BigUploadProps = {
-  handleUpload: ({ target: { files } }: any) => void
-}
-
-const BigUpload: React.FC<BigUploadProps> = ({handleUpload}) => {
-  return (
-    <Dialog open={true} >
-      <Grid >
-        <Card>
-          <CardHeader 
-            title="Envie arquivos para anotar"
-            style={{margin: "32px 16px"}}
-          />
-          <CardContent>
-            <Grid container justify="center">
-              <Grid item children={<FileUploader handleUpload={handleUpload} />}/>
-            </Grid>
-        </CardContent>
-        </Card>
-      </Grid>
-    </Dialog>
-  )
-} 
 

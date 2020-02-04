@@ -14,9 +14,10 @@ type AnnotatorProps = {
   handleAdd: (s:Selection | "") => () => void
   handleDelete: any
   handleSave: () => void
+  ontology: object
 }
 
-export const Annotator: React.FC<AnnotatorProps> = ({annotation, text, handleChange, handleAdd, handleSave, handleDelete}) => {
+export const Annotator: React.FC<AnnotatorProps> = ({annotation, text, ontology, handleChange, handleAdd, handleSave, handleDelete}) => {
   const [selection, setSelection] = useState<Selection | null>(null);
 
   const handleSelection = () => {

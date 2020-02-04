@@ -1,17 +1,28 @@
 import axios from 'axios'
 import qs from 'qs'
 
+const __API__ = {
+  development: "http://localhost:8080",
+  production: "https://workspace23.appspot.com/",
+  ulicess: 'https://cors-anywhere.herokuapp.com/http://famahotel.tk/git'
+}
+
+
 const client = axios.create({
-  baseURL: 'https://cors-anywhere.herokuapp.com/http://famahotel.tk/git'
+  baseURL: __API__.development,
+  withCredentials: true
 })
 
-export const auth = ({username, password}) => client('valida.php', {
-  method: "POST",
-  headers: { "content-type": "application/x-www-form-urlencoded" },
-  data: qs.stringify({usuario: username, senha: password})
+export const auth = ({username, password}) => client.post('auth/login',{
+  "username": username,
+  "password": password
 })
 
-export const submitAnnotation = console.log
+export const getOntology = () => client.get("/annotation/ontology")
+export const getAssigment = () => client.get("/annotation/assigment")
+
+
+export const submitAnnotation = data => {console.log(data); return client.post("/annotation", data)}
 
 export const submitAnnotationFORREAL = (texts: any) => {
   texts.map(t => client('salvaAnotacoes.php', {
