@@ -12,7 +12,7 @@ export const App: React.FC = () => {
   const [assigment, setAssigment] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [err, setErr] = useState(false)
-
+  console.log(localStorage.getItem("token"))
   useEffect(() => {
     Promise.all([getOntology(), getAssigment()])
       .then(([{ data: { data } }, { data: { assigment } }]) => {
@@ -66,20 +66,30 @@ export const App: React.FC = () => {
   }
 
   const handleSave = () => {
-    submitAnnotation({
-        assigment_id: assigment.assigment_id,
-        labels: annotation.map(a => ({ 
-          first: a.first,
-          second: a.second,
-          third: a.third,
-          fourth: a.fourth,
-          explicit: a.explicit,
-          polarity: a.polarity,
-          start: a.reference.pos[0],
-          end: a.reference.pos[1]
-        }))
+    const data = {
+      assigment_id: assigment.assigment_id,
+      labels: annotation.map(a => ({ 
+        first: a.first,
+        second: a.second,
+        third: a.third,
+        fourth: a.fourth,
+        explicit: a.explicit,
+        polarity: a.polarity,
+        start: a.reference.pos[0],
+        end: a.reference.pos[1]
+      }))
+    }
+    setAssigment(null)
+    setIsLoading(true)
+    submitAnnotation(data)
+      .then(() => {
+        getAssigment()
+          .then(({data: {assigment}}) => {
+            setAssigment(assigment)
+            setAnnotation([])
+            setIsLoading(false)
+          })
       })
-      .then(console.log)
       .catch(console.error)
   }
 
@@ -119,7 +129,7 @@ export const App: React.FC = () => {
     <>
       <TopBar/>
       {
-        isLoading
+        isLoading || !assigment
           ? <> </>
           : <Annotator
               ontology={ontology}

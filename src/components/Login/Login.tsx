@@ -10,6 +10,7 @@ import Box from '@material-ui/core/Box'
 
 import { auth } from '../../services/client'
 
+import ls from 'local-storage'
 
 export const Login: React.FC<any> = () => {
   const [loggedIn, setLoggedIn] = useState(false)
@@ -19,7 +20,10 @@ export const Login: React.FC<any> = () => {
   const handleLogin = ({ username, password }) => {
     setIsLoading(true)
     auth({ username, password })
-      .then(() => setLoggedIn(true))
+      .then(({data: {token}}) => {
+        ls('@auth', token)
+        setLoggedIn(true)
+      })
       .catch(setErr)
       .finally(() => setIsLoading(false))
   }

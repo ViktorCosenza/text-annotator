@@ -1,6 +1,8 @@
 import axios from 'axios'
 import qs from 'qs'
 
+import ls from 'local-storage'
+
 const __API__ = {
   development: "http://localhost:8080",
   production: "https://workspace23.appspot.com/",
@@ -9,20 +11,36 @@ const __API__ = {
 
 
 const client = axios.create({
-  baseURL: __API__.development,
-  withCredentials: true
+  baseURL: __API__.development
 })
 
 export const auth = ({username, password}) => client.post('auth/login',{
   "username": username,
   "password": password
+}, {
+  headers: {
+    Authorization: "Bearer " + ls("@auth"),
+  }
 })
 
-export const getOntology = () => client.get("/annotation/ontology")
-export const getAssigment = () => client.get("/annotation/assigment")
+export const getOntology = () => client.get("/annotation/ontology", {
+  headers: {
+    Authorization: "Bearer " + ls("@auth"),
+  }
+})
+
+export const getAssigment = () => client.get("/annotation/assigment", {
+  headers: {
+    Authorization: "Bearer " + ls("@auth"),
+  }
+})
 
 
-export const submitAnnotation = data => {console.log(data); return client.post("/annotation", data)}
+export const submitAnnotation = data => client.post("/annotation", data, {
+  headers: {
+    Authorization: "Bearer " + ls("@auth"),
+  }
+})
 
 export const submitAnnotationFORREAL = (texts: any) => {
   texts.map(t => client('salvaAnotacoes.php', {
