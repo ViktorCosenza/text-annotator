@@ -10,7 +10,7 @@ import {
 
 import Annotation from './Annotation'
 
-import {AnnotationType} from '../../types/AnnotationType'
+import {AnnotationType} from '../../../types/AnnotationType'
 
 type AnnotationListProps = {
   annotations: AnnotationType[]

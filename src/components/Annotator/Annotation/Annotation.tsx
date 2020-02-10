@@ -4,9 +4,9 @@ import ThumbDown from '@material-ui/icons/ThumbDown'
 import ThumbUp from '@material-ui/icons/ThumbUp'
 import Remove from '@material-ui/icons/Remove'
 
-import ontology from '../../utils/ontology'
+import ontology from '../../../utils/ontology'
 
-import {AnnotationType, Polarity} from '../../types/AnnotationType'
+import {AnnotationType, Polarity} from '../../../types/AnnotationType'
 
 import {
   Checkbox,
