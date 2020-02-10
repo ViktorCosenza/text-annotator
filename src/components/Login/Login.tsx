@@ -7,6 +7,8 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Grid from '@material-ui/core/Grid'
 import Box from '@material-ui/core/Box'
+import Alert from '@material-ui/lab/Alert'
+import AlertTitle from '@material-ui/lab/AlertTitle'
 
 import { auth } from '../../services/client'
 
@@ -28,10 +30,6 @@ export const Login: React.FC<any> = () => {
       .finally(() => setIsLoading(false))
   }
 
-  if (err) {
-    return (<>{err.toString()}</>)
-  }
-
   if (loggedIn)
     return (<App />)
   else
@@ -40,11 +38,18 @@ export const Login: React.FC<any> = () => {
         <Grid container item alignItems="center" justify="center" style={{ height: "100vh" }}>
           <Grid item children={
             <Card>
+              {
+                err  
+                ? 
+                <Alert severity="error">
+                  <AlertTitle>Erro {err.status}</AlertTitle>
+                  Usuario ou senha incorretos!
+                </Alert>
+                : <></>
+              }
               <CardContent>
-                {isLoading
-                  ? <> Loading... </>
-                  : <LoginForm onLogin={handleLogin} />
-                }</CardContent>
+                <LoginForm loading={isLoading}onLogin={handleLogin} />
+                </CardContent>
             </Card>
           } />
         </Grid>
